@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
+import matplotlib.pyplot as plt
 import numpy as np
 
 
 def rotate(data, degree):
     # data: M x 2
-    theta = np.pi/180 * degree
+    theta = np.pi / 180 * degree
     R = np.array([[np.cos(theta), -np.sin(theta)],
                   [np.sin(theta), np.cos(theta)]])  # rotation matrix
     return np.dot(data, R.T)
@@ -17,10 +18,7 @@ def leastSquares(X, Y):
 
     # TODO: YOUR CODE HERE
     # closed form solution by matrix-vector representations only
-
-
-
-    return w
+    return np.linalg.inv(X.transpose() @ X) @ X.transpose() @ Y
 
 
 def model(X, w):
@@ -29,12 +27,10 @@ def model(X, w):
     # return y_hat: M x 1
 
     # TODO: YOUR CODE HERE
-
-    return y_hat
+    return X @ w
 
 
 def generate_data(M, var1, var2, degree):
-
     # data generate involves two steps:
     # Step I: generating 2-D data, where two axis are independent
     # M (scalar): The number of data samples
@@ -44,7 +40,7 @@ def generate_data(M, var1, var2, degree):
     mu = [0, 0]
 
     Cov = [[var1, 0],
-           [0,  var2]]
+           [0, var2]]
 
     data = np.random.multivariate_normal(mu, Cov, M)
     # shape: M x 2
@@ -56,7 +52,7 @@ def generate_data(M, var1, var2, degree):
     plt.xlabel('a')
     plt.ylabel('b')
     plt.tight_layout()
-    plt.savefig('data_ab_'+str(var2)+'.jpg')
+    plt.savefig('data_ab_' + str(var2) + '.jpg')
 
     # Step II: rotate data by 45 degree counter-clockwise,
     # so that the two dimensions are in fact correlated
@@ -74,10 +70,10 @@ def generate_data(M, var1, var2, degree):
     # plot the line where data are mostly generated around
     X_new = np.linspace(-5, 5, 100, endpoint=True).reshape([100, 1])
 
-    Y_new = np.tan(np.pi/180*degree)*X_new
+    Y_new = np.tan(np.pi / 180 * degree) * X_new
     plt.plot(X_new, Y_new, color="blue", linestyle='dashed')
     plt.tight_layout()
-    plt.savefig('data_xy_'+str(var2) + '_' + str(degree) + '.jpg')
+    plt.savefig('data_xy_' + str(var2) + '_' + str(degree) + '.jpg')
     return data
 
 
@@ -87,7 +83,7 @@ def generate_data(M, var1, var2, degree):
 # Settings
 M = 5000
 var1 = 1
-var2 = 0.8
+var2 = 0.3
 degree = 45
 
 data = generate_data(M, var1, var2, degree)
@@ -98,7 +94,6 @@ Input = data[:, 0].reshape((-1, 1))  # M x d, where d=1
 # M x (d+1) augmented feature
 Input_aug = np.concatenate([Input, np.ones([M, 1])], axis=1)
 Output = data[:, 1].reshape((-1, 1))  # M x 1
-
 
 w_x2y = leastSquares(Input_aug, Output)  # (d+1) x 1, where d=1
 
@@ -116,7 +111,6 @@ w_y2x = leastSquares(Input_aug, Output)  # (d+1) x 1, where d=1
 print('Predicting x from y (y2x): weight=' +
       str(w_y2x[0, 0]), 'bias = ', str(w_y2x[1, 0]))
 
-
 # plot the data points
 plt.figure()
 X = data[:, 0].reshape((-1, 1))  # M x d, where d=1
@@ -131,7 +125,7 @@ plt.ylabel('y')
 # plot the line where data are mostly generated around
 X_new = np.linspace(-4, 4, 100, endpoint=True).reshape([100, 1])
 
-Y_new = np.tan(np.pi/180*degree)*X_new
+Y_new = np.tan(np.pi / 180 * degree) * X_new
 plt.plot(X_new, Y_new, color="blue", linestyle='dashed')
 
 # plot the prediction of y from x (x2y)
